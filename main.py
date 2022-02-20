@@ -15,6 +15,13 @@ class BookIn(BaseModel):
     saleprice = str
 
 
+class Book(Document):
+    title = StringField(required=True)
+    author = StringField(max_length=100)
+    listprice = StringField(max_length=50)
+    saleprice = StringField(max_length=50)
+
+
 @app.get("/")
 def get_books():
     connect_atlas()
@@ -24,11 +31,14 @@ def get_books():
     }
 
 
-@app.post("/")
+@app.post("/", status_code=201)
 def create_new_book(book: BookIn):
+    print(book.title)
     connect_atlas()
     create_new_book_in_mongo(book)
-    return
+    return {
+        "message": "{} was created.".format(book.title)
+    }
 
 
 def connect_atlas():
@@ -54,11 +64,9 @@ def get_books_from_mongo():
 
 
 def create_new_book_in_mongo(book: BookIn):
+    bookDoc = Book(title=book.title)
+    bookDoc.author = book.author
+    bookDoc.listprice = book.listprice
+    bookDoc.saleprice = book.saleprice
+    bookDoc.save()
     return
-
-
-class Book(Document):
-    title = StringField(required=True)
-    author = StringField(max_length=100)
-    listprice = StringField(max_length=50)
-    saleprice = StringField(max_length=50)
