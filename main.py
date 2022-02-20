@@ -1,5 +1,6 @@
 import email
 from typing import Optional
+from typing import Optional
 from fastapi import FastAPI
 from pydantic import BaseModel
 
@@ -9,10 +10,10 @@ app = FastAPI()
 
 
 class BookIn(BaseModel):
-    title = str
-    author = str
-    listprice = str
-    saleprice = str
+    title: str
+    author: str
+    listprice: str
+    saleprice: str
 
 
 class Book(Document):
@@ -33,12 +34,10 @@ def get_books():
 
 @app.post("/", status_code=201)
 def create_new_book(book: BookIn):
-    print(book.title)
+    print(book)
     connect_atlas()
     create_new_book_in_mongo(book)
-    return {
-        "message": "{} was created.".format(book.title)
-    }
+    return book
 
 
 def connect_atlas():
