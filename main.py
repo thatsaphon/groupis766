@@ -1,9 +1,13 @@
-import email
-from typing import Optional
-from typing import Optional
 from fastapi import FastAPI
-
+from pydantic import BaseModel
 from db import *
+
+
+class BookIn(BaseModel):
+    title: str
+    author: str
+    listprice: str
+    saleprice: str
 
 
 app = FastAPI()
@@ -27,13 +31,23 @@ def get_book_from_title(book_title: str):
 
 @app.post("/book/", status_code=201)
 def create_new_book(book: BookIn):
-    create_new_book_in_mongo(book)
+    bookDoc = Book(title=book.title)
+    bookDoc.author = book.author
+    bookDoc.listprice = book.listprice
+    bookDoc.saleprice = book.saleprice
+    bookDoc.save()
+    create_new_book_in_mongo(bookDoc)
     return book
 
 
 @app.put("/book/{book_title}")
 def update_book(book_title: str, book: BookIn):
-    update_book_in_mongo(book_title, book)
+    bookDoc = Book(title=book.title)
+    bookDoc.author = book.author
+    bookDoc.listprice = book.listprice
+    bookDoc.saleprice = book.saleprice
+    bookDoc.save()
+    update_book_in_mongo(book_title, bookDoc)
     return
 
 

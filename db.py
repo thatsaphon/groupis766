@@ -1,12 +1,4 @@
-from pydantic import BaseModel
 from mongoengine import *
-
-
-class BookIn(BaseModel):
-    title: str
-    author: str
-    listprice: str
-    saleprice: str
 
 
 class Book(Document):
@@ -47,16 +39,17 @@ def get_book_from_mongo(book_title: str):
     }
 
 
-def create_new_book_in_mongo(book: BookIn):
-    bookDoc = Book(title=book.title)
-    bookDoc.author = book.author
-    bookDoc.listprice = book.listprice
-    bookDoc.saleprice = book.saleprice
-    bookDoc.save()
+def create_new_book_in_mongo(book: Book):
+    # bookDoc = Book(title=book.title)
+    # bookDoc.author = book.author
+    # bookDoc.listprice = book.listprice
+    # bookDoc.saleprice = book.saleprice
+    # bookDoc.save()
+    book.save()
     return
 
 
-def update_book_in_mongo(book_title: str, update_detail: BookIn):
+def update_book_in_mongo(book_title: str, update_detail: Book):
     book = Book.objects(title=book_title)
     print(
         {
@@ -68,11 +61,12 @@ def update_book_in_mongo(book_title: str, update_detail: BookIn):
     )
     book[0].delete()
 
-    bookDoc = Book(title=update_detail.title)
-    bookDoc.author = update_detail.author
-    bookDoc.listprice = update_detail.listprice
-    bookDoc.saleprice = update_detail.saleprice
-    bookDoc.save()
+    # bookDoc = Book(title=update_detail.title)
+    # bookDoc.author = update_detail.author
+    # bookDoc.listprice = update_detail.listprice
+    # bookDoc.saleprice = update_detail.saleprice
+    # bookDoc.save()
+    update_detail.save()
     return
 
 
