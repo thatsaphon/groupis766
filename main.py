@@ -35,7 +35,6 @@ def create_new_book(book: BookIn):
     bookDoc.author = book.author
     bookDoc.listprice = book.listprice
     bookDoc.saleprice = book.saleprice
-    bookDoc.save()
     create_new_book_in_mongo(bookDoc)
     return book
 
@@ -46,7 +45,6 @@ def update_book(book_title: str, book: BookIn):
     bookDoc.author = book.author
     bookDoc.listprice = book.listprice
     bookDoc.saleprice = book.saleprice
-    bookDoc.save()
     update_book_in_mongo(book_title, bookDoc)
     return
 
