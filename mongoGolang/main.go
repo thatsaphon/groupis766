@@ -11,18 +11,6 @@ import (
 
 // "bson"
 
-type Menu struct {
-	_id     string `bson:"_id"`
-	user    string `bson:"user"`
-	title   string `bson:"title"`
-	slug    string `bson:"slug"`
-	summary string `bson:"summary"`
-	Type    string `bson:"type"`
-	created string `bson:"created"`
-	updated string `bson:"updated"`
-	content string `bson:"content"`
-}
-
 func main() {
 
 	r := gin.Default()
