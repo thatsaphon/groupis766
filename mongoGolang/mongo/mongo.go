@@ -2,7 +2,7 @@ package mongo
 
 import (
 	"context"
-	"fmt"
+	"goMongo/model"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -12,71 +12,68 @@ import (
 
 // var mongoConnection *mongo.Client
 
-func ConnectMongo() (*mongo.Client, context.Context) {
-	var ctx context.Context
+// func ConnectMongo() (*mongo.Client, context.Context) {
+// 	var ctx context.Context
+// 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+// 	defer cancel()
+// 	client, err := mongo.Connect(ctx, options.Client().ApplyURI("mongodb+srv://is766:HTZIetTwHD4tkQjn@is766cluster0.dpa1z.mongodb.net/is766db?retryWrites=true&w=majority"))
+// 	if err != nil {
+// 		fmt.Println(err)
+// 		return nil, ctx
+// 	}
+// 	// defer func() {
+// 	// 	if err = client.Disconnect(ctx); err != nil {
+// 	// 		panic(err)
+// 	// 	}
+// 	// }()
+// 	return client, ctx
+// }
+
+func GetMenu() ([]map[string]interface{}, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	client, err := mongo.Connect(ctx, options.Client().ApplyURI("mongodb+srv://is766:HTZIetTwHD4tkQjn@is766cluster0.dpa1z.mongodb.net/is766db?retryWrites=true&w=majority"))
 	if err != nil {
-		fmt.Println(err)
-		return nil, ctx
+		return []map[string]interface{}{}, err
 	}
 	defer func() {
 		if err = client.Disconnect(ctx); err != nil {
 			panic(err)
 		}
 	}()
-	return client, ctx
-}
 
-func GetMenu() []map[string]interface{} {
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	defer cancel()
-	client, err := mongo.Connect(ctx, options.Client().ApplyURI("mongodb+srv://is766:HTZIetTwHD4tkQjn@is766cluster0.dpa1z.mongodb.net/is766db?retryWrites=true&w=majority"))
-	if err != nil {
-		fmt.Println(err)
-	}
-	defer func() {
-		if err = client.Disconnect(ctx); err != nil {
-			panic(err)
-		}
-	}()
-
-	// client, ctx := ConnectMongo()
 	collection := client.Database("is766db").Collection("menu")
 	cur, err := collection.Find(ctx, bson.D{})
 	if err != nil {
-		fmt.Println(err)
-		// fmt.Println(err)
+		return []map[string]interface{}{}, err
 	}
 	defer cur.Close(ctx)
-	var menues []map[string]interface{}
+	var menus []map[string]interface{}
 	for cur.Next(ctx) {
 		var result bson.D
 		err := cur.Decode(&result)
 		if err != nil {
-			fmt.Println(err)
+			return []map[string]interface{}{}, err
 		}
-		// menues = append(menues, result)
 		// do something with result....
 		menu := make(map[string]interface{})
 		for _, m := range result {
 			menu[m.Key] = m.Value
 		}
-		menues = append(menues, menu)
+		menus = append(menus, menu)
 	}
 	if err := cur.Err(); err != nil {
-		fmt.Println(err)
+		return []map[string]interface{}{}, err
 	}
-	return menues
+	return menus, nil
 }
 
-func GetRecipe() []map[string]interface{} {
+func GetRecipe() ([]map[string]interface{}, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	client, err := mongo.Connect(ctx, options.Client().ApplyURI("mongodb+srv://is766:HTZIetTwHD4tkQjn@is766cluster0.dpa1z.mongodb.net/is766db?retryWrites=true&w=majority"))
 	if err != nil {
-		fmt.Println(err)
+		return []map[string]interface{}{}, err
 	}
 	defer func() {
 		if err = client.Disconnect(ctx); err != nil {
@@ -88,8 +85,7 @@ func GetRecipe() []map[string]interface{} {
 	collection := client.Database("is766db").Collection("recipe")
 	cur, err := collection.Find(ctx, bson.D{})
 	if err != nil {
-		fmt.Println(err)
-		// fmt.Println(err)
+		return []map[string]interface{}{}, err
 	}
 	defer cur.Close(ctx)
 	var recipes []map[string]interface{}
@@ -97,9 +93,8 @@ func GetRecipe() []map[string]interface{} {
 		var result bson.D
 		err := cur.Decode(&result)
 		if err != nil {
-			fmt.Println(err)
+			return []map[string]interface{}{}, err
 		}
-		// menues = append(menues, result)
 		// do something with result....
 		recipe := make(map[string]interface{})
 		for _, m := range result {
@@ -108,7 +103,27 @@ func GetRecipe() []map[string]interface{} {
 		recipes = append(recipes, recipe)
 	}
 	if err := cur.Err(); err != nil {
-		fmt.Println(err)
+		return []map[string]interface{}{}, err
 	}
-	return recipes
+	return recipes, nil
+}
+
+func CreateMenu(menu model.CreateMenuRequest) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	client, err := mongo.Connect(ctx, options.Client().ApplyURI("mongodb+srv://is766:HTZIetTwHD4tkQjn@is766cluster0.dpa1z.mongodb.net/is766db?retryWrites=true&w=majority"))
+	if err != nil {
+		return err
+	}
+	defer func() {
+		if err = client.Disconnect(ctx); err != nil {
+			panic(err)
+		}
+	}()
+	collection := client.Database("is766db").Collection("menu")
+	menuBson, err := bson.Marshal(menu)
+
+	_, err = collection.InsertOne(ctx, menuBson)
+
+	return nil
 }
