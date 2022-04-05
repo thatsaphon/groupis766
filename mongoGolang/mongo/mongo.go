@@ -127,3 +127,51 @@ func CreateMenu(menu model.CreateMenuRequest) error {
 
 	return nil
 }
+
+func UpdateMenu(updatedTitle string, menu model.CreateMenuRequest) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	client, err := mongo.Connect(ctx, options.Client().ApplyURI("mongodb+srv://is766:HTZIetTwHD4tkQjn@is766cluster0.dpa1z.mongodb.net/is766db?retryWrites=true&w=majority"))
+	if err != nil {
+		return err
+	}
+	defer func() {
+		if err = client.Disconnect(ctx); err != nil {
+			panic(err)
+		}
+	}()
+	collection := client.Database("is766db").Collection("menu")
+
+	_, err = collection.DeleteOne(ctx, bson.D{{"title", updatedTitle}})
+	if err != nil {
+		return err
+	}
+
+	_, err = collection.InsertOne(ctx, menu)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func DeleteMenu(deletedTitle string) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	client, err := mongo.Connect(ctx, options.Client().ApplyURI("mongodb+srv://is766:HTZIetTwHD4tkQjn@is766cluster0.dpa1z.mongodb.net/is766db?retryWrites=true&w=majority"))
+	if err != nil {
+		return err
+	}
+	defer func() {
+		if err = client.Disconnect(ctx); err != nil {
+			panic(err)
+		}
+	}()
+	collection := client.Database("is766db").Collection("menu")
+
+	_, err = collection.DeleteOne(ctx, bson.D{{"title", deletedTitle}})
+	if err != nil {
+		return err
+	}
+	return nil
+}

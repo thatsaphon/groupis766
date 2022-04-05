@@ -9,8 +9,6 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// "bson"
-
 func main() {
 
 	r := gin.Default()
@@ -54,6 +52,39 @@ func main() {
 
 		c.JSON(http.StatusOK, gin.H{
 			"message": "Menu is created.",
+		})
+	})
+
+	r.PUT("/menu/:title", func(c *gin.Context) {
+		title := c.Param("title")
+		var request model.CreateMenuRequest
+		err := c.ShouldBindJSON(&request)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"message": err.Error(),
+			})
+			return
+		}
+
+		err = mongo.UpdateMenu(title, request)
+		c.JSON(http.StatusOK, gin.H{
+			"message": "Menu is updated.",
+		})
+	})
+
+	r.DELETE("/menu/:title", func(c *gin.Context) {
+		title := c.Param("title")
+
+		err := mongo.DeleteMenu(title)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"message": err.Error(),
+			})
+			return
+		}
+
+		c.JSON(http.StatusOK, gin.H{
+			"message": "Menu is deleted.",
 		})
 	})
 

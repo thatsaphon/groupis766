@@ -11,7 +11,7 @@ type CreateMenuRequest struct {
 	// Content string `bson:"content" json:"content" `
 
 	User    string `bson:"user" json:"user"`
-	Title   string `bson:"title" json:"title" valieate:"required"`
+	Title   string `bson:"title" json:"title" validate:"required"`
 	Slug    string `bson:"slug" json:"slug"`
 	Summary string `bson:"summary" json:"summary"`
 	Type    string `bson:"type" json:"type"`
