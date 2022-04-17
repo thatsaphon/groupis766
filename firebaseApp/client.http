@@ -1,0 +1,19 @@
+
+
+POST http://127.0.0.1:8080/user HTTP/1.1
+content-type: application/json
+
+{
+    "email":"test@test.com",
+    "phoneNumber":"+66811234567",
+    "password":"123456",
+    "displayName":"Nat",
+    "photoURL":"test"
+}
+
+POST http://127.0.0.1:8080/getCustomToken HTTP/1.1
+content-type: application/json
+
+{
+    "email":"test@test.com"
+}
