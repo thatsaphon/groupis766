@@ -2,16 +2,16 @@ package middleware
 
 import (
 	"context"
+	"firebaseApp/firebase"
 	"net/http"
 	"strings"
 
-	"firebase.google.com/go/auth"
 	"github.com/gin-gonic/gin"
 )
 
 // AuthMiddleware : to verify all authorized operations
 func AuthMiddleware(c *gin.Context) {
-	firebaseAuth := c.MustGet("firebaseAuth").(*auth.Client)
+	firebaseAuth := firebase.ClientAuth
 	authorizationToken := c.GetHeader("Authorization")
 	idToken := strings.TrimSpace(strings.Replace(authorizationToken, "Bearer", "", 1))
 	if idToken == "" {
